@@ -21,6 +21,10 @@ def helper():
 #-----------------------------------------------------------------------------
 # Suas rotas aqui:
 
+@app.route('/')
+def home():
+    return ctl.render('home')
+
 @app.route('/pagina/<username>', methods=['GET'])
 def action_pagina(username=None):
     return ctl.render('pagina',username)
@@ -55,9 +59,31 @@ def action_register():
     if ctl.register_user(username, password):
         return redirect('/portal')  # Redireciona para a página de login após o cadastro
     else:
-        return "Usuário já existe. Por favor, escolha outro nome de usuário."
+        return "Este usuário já existe"
 
+# Rota para a página de perfil
+@app.route('/perfil/<username>', method='GET')
+def perfil(username):
+    return ctl.render('perfil', username)
 
+# Rota para atualizar as informações do usuário
+def update_user(self, username, new_username, new_password):
+    for user in self.__user_accounts:
+        if user.username == username:
+            user.username = new_username
+            user.password = new_password
+            try:
+                self.save()  # Salva as alterações no arquivo JSON
+                return True
+            except Exception as x:
+                return f"Erro ao salvar as informações: {str(x)}"
+    return "O nome de usuário não foi encontrado."
+
+# Rota para excluir a conta do usuário
+@app.route('/perfil/<username>/delete', method='POST')
+def delete_profile(username):
+    ctl.delete_user(username)
+    return redirect('/portal')
 
 #-----------------------------------------------------------------------------
 

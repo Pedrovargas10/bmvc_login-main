@@ -9,7 +9,8 @@ class Application():
         self.pages = {
             'pagina': self.pagina,
             'portal': self.portal,
-            'registro': self.registro
+            'registro': self.registro,
+            'home': self.home
         }
         self.__model= DataRecord()
 
@@ -24,6 +25,9 @@ class Application():
 
     def helper(self):
         return template('app/views/html/helper')
+    
+    def home(self):
+        return template('app/views/html/index')
 
 
     def portal(self):
@@ -72,3 +76,21 @@ class Application():
     
     def register_user(self, username, password):
         return self.__model.register_user(username, password)
+
+    def perfil(self, username):
+        session_id = request.get_cookie('session_id')
+        current_user = self.__model.getCurrentUser(session_id)
+        if current_user and current_user.username == username:
+            return template('app/views/html/perfil', user=current_user)
+        redirect('/portal')
+
+    def update_user(self, username, new_username, new_password):
+        if self.__model.update_user(username, new_username, new_password):
+            response.set_cookie('session_id', self.__model.checkUser(new_username, new_password), httponly=True, secure=True, max_age=3600)
+            return True
+        return False
+
+    def delete_user(self, username):
+        self.__model.delete_user(username)
+        response.delete_cookie('session_id')
+        redirect('/portal')

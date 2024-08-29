@@ -67,3 +67,20 @@ class DataRecord():
             json.dump(user_data, arquivo_json)
         return True  # Indica que o registro foi bem-sucedido
 
+    def update_user(self, username, new_username, new_password):
+        for user in self.__user_accounts:
+            if user.username == username:
+                user.username = new_username
+                user.password = new_password
+                self.save()  # Salva as alterações no arquivo JSON
+                return True
+        return False
+
+    def delete_user(self, username):
+        self.__user_accounts = [user for user in self.__user_accounts if user.username != username]
+        self.save()
+
+    def save(self):
+        with open("app/controllers/db/user_accounts.json", "w") as arquivo_json:
+            user_data = [vars(user_account) for user_account in self.__user_accounts]
+            json.dump(user_data, arquivo_json)
