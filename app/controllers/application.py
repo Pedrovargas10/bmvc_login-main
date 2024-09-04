@@ -15,29 +15,25 @@ class Application():
         self.__model= DataRecord()
 
 
-    def render(self,page,parameter=None):
-        content = self.pages.get(page, self.helper)
+    def render(self, page, parameter=None):
+        content = self.pages.get(page)
+        if content is None:
+            raise ValueError("Página não encontrada")
         if not parameter:
             return content()
         else:
             return content(parameter)
-
-
-    def helper(self):
-        return template('app/views/html/helper')
     
     def home(self):
-        return template('app/views/html/index')
+        session_id = request.get_cookie('session_id')
+        current_user = self.__model.getCurrentUser(session_id)  # Assume que você tenha esse método no controller
+        return template('app/views/html/home', username=current_user.username if current_user else None)
 
 
     def portal(self):
-        session_id= request.get_cookie('session_id')
-        current_user= self.__model.getCurrentUser(session_id)
-        if current_user:
-            return template('app/views/html/portal', \
-            username= current_user.username)
-        return template('app/views/html/portal', \
-        username= None)
+        session_id = request.get_cookie('session_id')
+        current_user = self.__model.getCurrentUser(session_id)
+        return template('app/views/html/portal', username=current_user.username if current_user else None)
 
 
     def pagina(self,username):
@@ -53,7 +49,7 @@ class Application():
     def is_authenticated(self, username):
         session_id = request.get_cookie('session_id')
         current_user = self.__model.getCurrentUser(session_id)
-        return username == current_user.username
+        return current_user and username == current_user.username
 
 
     def authenticate_user(self, username, password):
@@ -61,7 +57,7 @@ class Application():
         if session_id:
             response.set_cookie('session_id', session_id, httponly=True, \
             secure=True, max_age=3600)
-            redirect(f'/pagina/{username}')
+            redirect('/')
         redirect('/portal')
 
 

@@ -44,13 +44,11 @@
               <a href="">
                 <i class="fa fa-phone" aria-hidden="true"></i>
                 <span>
-                  Call : +01 123455678990
-                </span>
-              </a>
-              <a href="">
-                <i class="fa fa-envelope" aria-hidden="true"></i>
-                <span>
-                  Email : demo@gmail.com
+                  {% if username %}
+                    Bem-vindo, {{username}}!
+                  {% else %}
+                    Bem-vindo, visitante!
+                  {% endif %}
                 </span>
               </a>
             </div>
@@ -63,9 +61,12 @@
             <div class="user_option_box">
               <a href="" class="account-link">
                 <i class="fa fa-user" aria-hidden="true"></i>
-                <span>
-                  My Account
-                </span>
+                <a href="/portal">
+                  <span>
+                    My Account
+                  </span>
+                </a>
+
               </a>
               <a href="" class="cart-link">
                 <i class="fa fa-shopping-cart" aria-hidden="true"></i>

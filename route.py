@@ -14,10 +14,6 @@ ctl = Application()
 def serve_static(filepath):
     return static_file(filepath, root='./app/static')
 
-@app.route('/helper')
-def helper():
-    return ctl.render('helper')
-
 #-----------------------------------------------------------------------------
 # Suas rotas aqui:
 
@@ -66,18 +62,6 @@ def action_register():
 def perfil(username):
     return ctl.render('perfil', username)
 
-# Rota para atualizar as informações do usuário
-def update_user(self, username, new_username, new_password):
-    for user in self.__user_accounts:
-        if user.username == username:
-            user.username = new_username
-            user.password = new_password
-            try:
-                self.save()  # Salva as alterações no arquivo JSON
-                return True
-            except Exception as x:
-                return f"Erro ao salvar as informações: {str(x)}"
-    return "O nome de usuário não foi encontrado."
 
 # Rota para excluir a conta do usuário
 @app.route('/perfil/<username>/delete', method='POST')
