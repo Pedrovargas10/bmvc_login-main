@@ -40,18 +40,27 @@
       <div class="header_top">
         <div class="container-fluid">
           <div class="top_nav_container">
-            <div class="contact_nav">
+            <div class="contact_nav"> 
               <a href="">
                 <i class="fa fa-phone" aria-hidden="true"></i>
-                <span>
-                  {% if username %}
-                    Bem-vindo, {{username}}!
-                  {% else %}
-                    Bem-vindo, visitante!
-                  {% endif %}
+                <span id="welcome-message">
                 </span>
               </a>
             </div>
+
+            <script>
+              var username = "{{username}}";  // O username vem do back-end
+            </script>
+
+            <script>
+              var welcomeMessageElement = document.getElementById('welcome-message');
+  
+              if (username && username !== 'None') {
+                welcomeMessageElement.textContent = "Bem-vindo, " + username + "!";
+              } else {
+                welcomeMessageElement.textContent = "Bem-vindo, visitante!";
+              }
+            </script>
             <from class="search_form">
               <input type="text" class="form-control" placeholder="Search here...">
               <button class="" type="submit">
