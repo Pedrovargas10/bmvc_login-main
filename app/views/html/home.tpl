@@ -70,12 +70,19 @@
             <div class="user_option_box">
               <a href="" class="account-link">
                 <i class="fa fa-user" aria-hidden="true"></i>
-                <a href="/portal">
-                  <span>
-                    My Account
-                  </span>
-                </a>
-
+                % if username:
+                  <a href="/pagina/{{username}}">
+                    <span>
+                      My Account
+                    </span>
+                  </a>
+                % else:
+                  <a href="/portal">
+                    <span>
+                      My Account
+                    </span>
+                  </a>
+                % end                    
               </a>
               <a href="" class="cart-link">
                 <i class="fa fa-shopping-cart" aria-hidden="true"></i>

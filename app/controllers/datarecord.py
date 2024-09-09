@@ -70,8 +70,10 @@ class DataRecord():
     def update_user(self, username, new_username, new_password):
         for user in self.__user_accounts:
             if user.username == username:
+                # Atualiza o nome de usuário e a senha, se fornecido
                 user.username = new_username
-                user.password = new_password
+                if new_password:
+                    user.password = new_password
                 self.save()  # Salva as alterações no arquivo JSON
                 return True
         return False
@@ -84,3 +86,9 @@ class DataRecord():
         with open("app/controllers/db/user_accounts.json", "w") as arquivo_json:
             user_data = [vars(user_account) for user_account in self.__user_accounts]
             json.dump(user_data, arquivo_json)
+    
+    def checkUserExists(self, username):
+        for user in self.__user_accounts:
+            if user.username == username:
+                return True
+        return False

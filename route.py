@@ -57,17 +57,26 @@ def action_register():
     else:
         return "Este usuário já existe"
 
-# Rota para a página de perfil
-@app.route('/perfil/<username>', method='GET')
-def perfil(username):
-    return ctl.render('perfil', username)
-
-
-# Rota para excluir a conta do usuário
-@app.route('/perfil/<username>/delete', method='POST')
+@app.route('/pagina/<username>/update', method='POST')
+def update_profile(username):
+    new_username = request.forms.get('new_username')
+    new_password = request.forms.get('new_password')
+    
+    # Chama a função de atualização e armazena o resultado
+    result = ctl.update_user(username, new_username, new_password)
+    
+    # Verifica se o resultado é uma mensagem de erro
+    if isinstance(result, str):
+        # Passa a mensagem de erro para o template
+        return template('app/views/html/pagina', username=username, error_message=result)
+    else:
+        # Atualiza o nome de usuário com sucesso e redireciona
+        return redirect(f'/pagina/{new_username}')
+    
+@app.route('/pagina/<username>/delete', method='POST')
 def delete_profile(username):
     ctl.delete_user(username)
-    return redirect('/portal')
+    return redirect('/')
 
 #-----------------------------------------------------------------------------
 

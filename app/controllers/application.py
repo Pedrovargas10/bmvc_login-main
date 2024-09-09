@@ -36,15 +36,14 @@ class Application():
         return template('app/views/html/portal', username=current_user.username if current_user else None)
 
 
-    def pagina(self,username):
-        if self.is_authenticated(username):
-            session_id= request.get_cookie('session_id')
-            user = self.__model.getCurrentUser(session_id)
-            return template('app/views/html/pagina', \
-            transfered=True, current_user=user)
-        return template('app/views/html/pagina', \
-        transfered=False)
+    def pagina(self, username, error_message=None):
+        session_id = request.get_cookie('session_id')
+        current_user = self.__model.getCurrentUser(session_id)
 
+        if current_user and current_user.username == username:
+            return template('app/views/html/pagina', username=current_user.username, error_message=error_message)
+        else:
+            return redirect('/portal')
 
     def is_authenticated(self, username):
         session_id = request.get_cookie('session_id')
@@ -65,7 +64,7 @@ class Application():
         session_id = request.get_cookie('session_id')
         self.__model.logout(session_id)
         response.delete_cookie('session_id')
-        redirect('/portal')
+        redirect('/')
 
     def registro(self):
         return template('app/views/html/registro')
@@ -73,20 +72,34 @@ class Application():
     def register_user(self, username, password):
         return self.__model.register_user(username, password)
 
-    def perfil(self, username):
-        session_id = request.get_cookie('session_id')
-        current_user = self.__model.getCurrentUser(session_id)
-        if current_user and current_user.username == username:
-            return template('app/views/html/perfil', user=current_user)
-        redirect('/portal')
-
     def update_user(self, username, new_username, new_password):
+        # Verifica se o novo nome de usuário já existe no sistema
+        if new_username != username and self.__model.checkUserExists(new_username):
+            return "Este nome de usuário já existe"
+    
+        # Verifica se o nome de usuário é o mesmo
+        if username == new_username:
+            return "O nome de usuário não pode ser igual ao anterior"
+    
+        # Tenta atualizar o usuário
         if self.__model.update_user(username, new_username, new_password):
-            response.set_cookie('session_id', self.__model.checkUser(new_username, new_password), httponly=True, secure=True, max_age=3600)
+            # Atualiza a sessão para refletir o novo nome de usuário
+            session_id = self.__model.checkUser(new_username, new_password if new_password else self.__model.get_password(username))
+            response.set_cookie('session_id', session_id, httponly=True, secure=True, max_age=3600)
             return True
-        return False
-
+    
+        return "Falha ao atualizar o usuário"
+    
     def delete_user(self, username):
+        # Exclui o usuário do banco de dados
         self.__model.delete_user(username)
+    
+        # Remove a sessão do usuário
+        session_id = request.get_cookie('session_id')
+        self.__model.logout(session_id)  # Garante que a sessão seja removida
+    
+        # Remove o cookie da sessão
         response.delete_cookie('session_id')
-        redirect('/portal')
+    
+        # Redireciona para a página inicial
+        redirect('/')
