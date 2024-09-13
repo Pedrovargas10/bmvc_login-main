@@ -90,16 +90,17 @@ class Application():
     
         return "Falha ao atualizar o usuário"
     
-    def delete_user(self, username):
-        # Exclui o usuário do banco de dados
-        self.__model.delete_user(username)
-    
-        # Remove a sessão do usuário
+    def delete_user(self, username, password):
         session_id = request.get_cookie('session_id')
-        self.__model.logout(session_id)  # Garante que a sessão seja removida
+        user = self.__model.getCurrentUser(session_id)
     
-        # Remove o cookie da sessão
-        response.delete_cookie('session_id')
+        if user and user.username == username and user.password == password:
+            self.__model.delete_user(username)
+            self.__model.logout(session_id)
+            response.delete_cookie('session_id')
+            return {'redirect': '/'}
     
-        # Redireciona para a página inicial
-        redirect('/')
+        # Se a senha estiver incorreta, retorna uma mensagem de erro
+        return {'error_message': "Senha incorreta. Por favor, tente novamente."}
+
+

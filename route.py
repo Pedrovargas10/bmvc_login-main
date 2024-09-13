@@ -75,8 +75,17 @@ def update_profile(username):
     
 @app.route('/pagina/<username>/delete', method='POST')
 def delete_profile(username):
-    ctl.delete_user(username)
-    return redirect('/')
+    password = request.forms.get('password')  # Obtém a senha do formulário
+
+    # Chama o método no controller para excluir a conta
+    result = ctl.delete_user(username, password)
+    
+    if 'redirect' in result:
+        return redirect(result['redirect'])
+    
+    if 'error_message' in result:
+        return template('app/views/html/pagina', username=username, error_message=result['error_message'])
+
 
 #-----------------------------------------------------------------------------
 
