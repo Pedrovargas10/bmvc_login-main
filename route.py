@@ -56,23 +56,47 @@ def action_register():
         return redirect('/portal')  # Redireciona para a página de login após o cadastro
     else:
         return "Este usuário já existe"
+    
+@app.route('/pagina/<username>/update-username', method='GET')
+def update_username_page(username):
+    return template('app/views/html/update-username', username=username, error_message="")
 
-@app.route('/pagina/<username>/update', method='POST')
-def update_profile(username):
+
+@app.route('/pagina/<username>/update-username', method='POST')
+def update_username(username):
     new_username = request.forms.get('new_username')
+    current_password = request.forms.get('current_password')
+    
+    # Chame o controlador para atualizar o nome de usuário
+    result = ctl.update_username(username, new_username, current_password)
+    
+    if 'redirect' in result:
+        return redirect(result['redirect'])
+    if 'error_message' in result:
+        return template('app/views/html/update-username', username=username, error_message=result['error_message'])
+
+@app.route('/pagina/<username>/update-password', method='GET')
+def update_password_page(username):
+    return template('app/views/html/update-password', username=username, error_message="")
+
+@app.route('/pagina/<username>/update-password', method='POST')
+def update_password(username):
+    current_password = request.forms.get('current_password')
     new_password = request.forms.get('new_password')
-    
-    # Chama a função de atualização e armazena o resultado
-    result = ctl.update_user(username, new_username, new_password)
-    
-    # Verifica se o resultado é uma mensagem de erro
-    if isinstance(result, str):
-        # Passa a mensagem de erro para o template
-        return template('app/views/html/pagina', username=username, error_message=result)
-    else:
-        # Atualiza o nome de usuário com sucesso e redireciona
-        return redirect(f'/pagina/{new_username}')
-    
+    confirm_password = request.forms.get('confirm_password')
+
+    # Verifica se a nova senha e a confirmação são iguais
+    if new_password != confirm_password:
+        return template('app/views/html/update-password', username=username, error_message="As senhas não conferem.")
+
+    # Chame o controlador para atualizar a senha do usuário
+    result = ctl.update_password(username, current_password, new_password)
+
+    if 'redirect' in result:
+        return redirect(result['redirect'])
+    if 'error_message' in result:
+        return template('app/views/html/update-password', username=username, error_message=result['error_message'])
+
 @app.route('/pagina/<username>/delete', method='POST')
 def delete_profile(username):
     password = request.forms.get('password')  # Obtém a senha do formulário

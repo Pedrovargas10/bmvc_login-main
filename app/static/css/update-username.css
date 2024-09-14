@@ -5,15 +5,22 @@
     text-align: center;
 }
 
-.user-options {
-    margin: 20px 0;
+.form-group {
+    margin-bottom: 15px;
 }
 
-.btn-option, .btn-delete, .btn-back, .btn-logout  {
+input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.btn-save, .btn-back {
     display: block;
     width: 100%;
     padding: 10px;
-    margin: 10px 0;
     background-color: #4CAF50;
     color: white;
     border: none;
@@ -22,16 +29,9 @@
     text-decoration: none;
 }
 
-.btn-delete {
-    background-color: #f44336; /* Vermelho para o botão de excluir */
-}
-
 .btn-back {
-    background-color: #555; /* Cinza para o botão de voltar */
-}
-
-.btn-logout {
-    background-color: #c62828; /* Vermelho mais escuro ao passar o mouse */
+    background-color: #f44336;
+    margin-top: 10px;
 }
 
 .error-message {

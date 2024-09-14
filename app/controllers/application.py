@@ -72,28 +72,40 @@ class Application():
     def register_user(self, username, password):
         return self.__model.register_user(username, password)
 
-    def update_user(self, username, new_username, new_password):
-        # Verifica se o novo nome de usuário já existe no sistema
+    def update_username(self, username, new_username, current_password):
         if new_username != username and self.__model.checkUserExists(new_username):
-            return "Este nome de usuário já existe"
-    
-        # Verifica se o nome de usuário é o mesmo
+            return {"error_message": "Este nome de usuário já existe"}
+
         if username == new_username:
-            return "O nome de usuário não pode ser igual ao anterior"
+            return {"error_message": "O nome de usuário não pode ser igual ao anterior"}
+
+        # Verificar se a senha atual está correta
+        if not self.__model.get_user_password(username) == current_password:
+            return {"error_message": "Senha atual incorreta"}
+
+        # Atualizar o nome de usuário
+        if self.__model.update_user(username, new_username, current_password):
+            return {"redirect": "/"}
     
-        # Tenta atualizar o usuário
-        if self.__model.update_user(username, new_username, new_password):
-            # Atualiza a sessão para refletir o novo nome de usuário
-            session_id = self.__model.checkUser(new_username, new_password if new_password else self.__model.get_password(username))
-            response.set_cookie('session_id', session_id, httponly=True, secure=True, max_age=3600)
-            return True
+        return {"error_message": "Falha ao atualizar o nome de usuário"}
     
-        return "Falha ao atualizar o usuário"
+    def update_password(self, username, current_password, new_password):
+        # Obtém o usuário atual baseado no nome de usuário e senha
+        user = self.__model.getCurrentUser(request.get_cookie('session_id'))
+
+        if user and user.username == username and user.password == current_password:
+            # Atualiza a senha do usuário
+            if self.__model.update_user(username, username, new_password):
+                # Atualiza a sessão e redireciona para a home
+                response.set_cookie('session_id', self.__model.checkUser(username, new_password), httponly=True, secure=True, max_age=3600)
+                return {'redirect': '/'}
     
+        return {'error_message': "Senha atual incorreta ou falha ao atualizar a senha."}
+
     def delete_user(self, username, password):
         session_id = request.get_cookie('session_id')
         user = self.__model.getCurrentUser(session_id)
-    
+
         if user and user.username == username and user.password == password:
             self.__model.delete_user(username)
             self.__model.logout(session_id)

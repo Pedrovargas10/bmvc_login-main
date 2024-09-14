@@ -92,3 +92,10 @@ class DataRecord():
             if user.username == username:
                 return True
         return False
+    
+    def get_user_password(self, username):
+        """Obtém a senha do usuário com base no nome de usuário."""
+        for user in self.__user_accounts:
+            if user.username == username:
+                return user.password
+        return None
