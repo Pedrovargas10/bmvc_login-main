@@ -10,7 +10,8 @@ class Application():
             'pagina': self.pagina,
             'portal': self.portal,
             'registro': self.registro,
-            'home': self.home
+            'home': self.home,
+            'superuser': self.superuser
         }
         self.__model= DataRecord()
 
@@ -28,6 +29,18 @@ class Application():
         session_id = request.get_cookie('session_id')
         current_user = self.__model.getCurrentUser(session_id)  # Assume que você tenha esse método no controller
         return template('app/views/html/home', username=current_user.username if current_user else None)
+    
+    def superuser(self):
+        session_id = request.get_cookie('session_id')
+        current_user = self.__model.getCurrentUser(session_id)
+    
+        if self.is_superuser(session_id):
+            # Obtém todos os usuários para passar para o template
+            users = self.__model.get_all_users()
+            # Inclui uma mensagem opcional para o template
+            return template('app/views/html/superuser', users=users)
+        else:
+            return redirect('/')
 
 
     def portal(self):
@@ -116,3 +129,25 @@ class Application():
         return {'error_message': "Senha incorreta. Por favor, tente novamente."}
 
 
+    def getCurrentUser(self, session_id):
+        return self.__model.getCurrentUser(session_id)  # Já existente, como mencionamos antes
+    
+    def is_superuser(self, session_id):
+        user = self.getCurrentUser(session_id)
+        # Verifique se o usuário é o superusuário diretamente com o atributo
+        if user and user.username == 'super':
+            return True
+        return False
+    
+    def get_all_users(self):
+        return self.__model.get_all_users()
+    
+
+    def super_register_user(self, username, password):
+        return self.__model.register_user(username, password)
+
+    def super_delete_user(self, username):
+        self.__model.delete_user(username)
+
+    def super_update_user(self, username, new_username, new_password):
+        return self.__model.update_user(username, new_username, new_password)

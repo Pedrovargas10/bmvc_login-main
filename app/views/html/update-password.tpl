@@ -41,7 +41,7 @@
         </form>
 
         <!-- Link para voltar à página inicial -->
-        <a href="/" class="btn-back">Voltar à Página Inicial</a>
+        <a href="/pagina/{{ username }}" class="btn-back">Voltar à Página Inicial</a>
     </div>
 
     <script src="/static/js/error-handler.js"></script> <!-- Validação de erro -->

@@ -1,0 +1,61 @@
+/* Estilos Gerais */
+body {
+    background-color: #000;
+    color: #0f0;
+    font-family: 'Courier New', Courier, monospace;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h2, h3 {
+    color: #0f0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid #0f0;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+/* Estilo dos Botões */
+button {
+    background-color: #0f0;
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #0c0;
+}
+
+/* Estilo dos Inputs */
+input[type="text"], input[type="password"] {
+    background-color: #222;
+    color: #0f0;
+    border: 1px solid #0f0;
+    padding: 10px;
+    width: calc(100% - 22px);
+    margin-bottom: 10px;
+}
+
+input[type="text"]::placeholder, input[type="password"]::placeholder {
+    color: #0f0;
+}

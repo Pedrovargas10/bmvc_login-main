@@ -99,3 +99,7 @@ class DataRecord():
             if user.username == username:
                 return user.password
         return None
+    
+    def get_all_users(self):
+        """Retorna uma lista de todos os usuários."""
+        return self.__user_accounts

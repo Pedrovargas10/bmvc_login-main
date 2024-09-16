@@ -23,7 +23,16 @@ def home():
 
 @app.route('/pagina/<username>', methods=['GET'])
 def action_pagina(username=None):
-    return ctl.render('pagina',username)
+    session_id = request.get_cookie('session_id')
+    current_user = ctl.getCurrentUser(session_id)  # Obtém o usuário atual
+
+    # Verifica se o usuário atual é o superusuário
+    if current_user and current_user.username == 'super':
+        # Redireciona o superusuário para a página de admin
+        return redirect('/admin')
+
+    # Se não for superusuário, renderiza a página normal
+    return ctl.render('pagina', username)
 
 
 @app.route('/portal', method='GET')
@@ -109,6 +118,50 @@ def delete_profile(username):
     
     if 'error_message' in result:
         return template('app/views/html/pagina', username=username, error_message=result['error_message'])
+    
+
+@app.route('/admin', methods=['GET'])
+def admin_page():
+    session_id = request.get_cookie('session_id')
+    if ctl.is_superuser(session_id):
+        return ctl.superuser()  # Chama o método que renderiza a página admin
+    else:
+        return redirect('/')
+    
+@app.route('/admin/create', method='POST')
+def create_user():
+    username = request.forms.get('username')
+    password = request.forms.get('password')
+    success = ctl.super_register_user(username, password)
+    if success:
+        return redirect('/admin')
+    else:
+        return "Erro ao criar usuário. O nome de usuário pode já existir."
+
+@app.route('/admin/delete/<username>', method='POST')
+def delete_user(username):
+    ctl.super_delete_user(username)
+    return redirect('/admin')
+
+@app.route('/admin/update-username', method='POST')
+def update_username():
+    current_username = request.forms.get('current_username')
+    new_username = request.forms.get('new_username')
+    success = ctl.super_update_user(current_username, new_username, None)
+    if success:
+        return redirect('/admin')
+    else:
+        return "Erro ao atualizar nome de usuário."
+
+@app.route('/admin/update-password', method='POST')
+def update_password():
+    username = request.forms.get('username')
+    new_password = request.forms.get('new_password')
+    success = ctl.super_update_user(username, username, new_password)
+    if success:
+        return redirect('/admin')
+    else:
+        return "Erro ao atualizar senha."
 
 
 #-----------------------------------------------------------------------------
